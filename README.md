@@ -1,186 +1,136 @@
-# 🌐 CloudMart — Enterprise Cloud Solution (Milestone 3)
+# ☕ BrewHaven Café — Cloud-Native Coffee Shop
 
-CloudMart is a cloud-based e-commerce platform built as part of **CSP451 – Enterprise Cloud Solutions**.  
-The project demonstrates modern cloud architecture using:
+**BrewHaven Café** is a cloud-native coffee shop application that demonstrates a modern containerized web architecture using Microsoft Azure.
 
-- **FastAPI** (backend)
-- **Cosmos DB (NoSQL)** for products, cart, and orders
-- **Docker** for containerization
-- **Azure Container Instances (ACI)** for deployment
-- **GitHub Actions CI/CD** for automation (test + build + deployment stage)
-
-This version uses a **single-container architecture** where the FastAPI backend also serves the frontend HTML/JS interface.
+The application allows customers to browse a café menu, filter by category, search items, manage a basket, and place orders — all backed by a managed NoSQL database.
 
 ---
 
-## 🚀 Features
+## 🚀 Technology Stack
 
-### ✔ Cloud-Hosted API  
-Fully containerized API running on Azure Container Instances.
+- **FastAPI (Python)** — Backend API + frontend HTML/JS
+- **Azure Cosmos DB (NoSQL)** — Products, cart, and orders
+- **Docker** — Containerized application runtime
+- **Azure Container Instances (ACI)** — Cloud deployment
+- **Docker Hub** — Container image registry
+- **GitHub** — Source control
 
-### ✔ Cosmos DB Integration  
-Three containers:
-- `products`
-- `cart`
-- `orders`
+The application follows a **single-container architecture**, where FastAPI serves both the backend API and the frontend UI.
 
-The app loads seeded products and supports full CRUD operations for cart and orders.
+---
 
-### ✔ CI/CD Pipeline  
-GitHub Actions:
-- **CI Pipeline (ci.yml)**:  
-  Runs linting + dependency install + Docker build.
-  
-- **Deployment Pipeline (deploy.yml)**:  
-  Echo-based manual deployment notice.  
-  *(Azure deployment is performed manually due to Seneca Lab subscription restrictions.)*
+## ✨ Features
 
-### ✔ Single Container Deployment  
-Docker Hub hosts the image, which is pulled by Azure Container Instances.
+### ☕ Coffee Shop Menu
+- Coffees, specialty drinks, pastries, and desserts
+- Category filtering
+- Search by item name or category
+
+### 🧺 Basket & Orders
+- Add, update, and remove items from basket
+- Automatic total calculation
+- Place orders stored in Cosmos DB
+
+### 🔐 Authentication
+- Lightweight JWT-based login
+- Protected cart and order endpoints
+
+### ☁️ Cloud-Native Design
+- Stateless container
+- Configuration via environment variables
+- Automatic database seeding on first startup
 
 ---
 
 ## 🏗 Architecture Overview
 
-**Browser → Azure Container Instance → FastAPI App → Cosmos DB**
+Browser
+↓
+Azure Container Instance
+↓
+FastAPI Application
+↓
+Azure Cosmos DB (NoSQL)
 
-### Components:
-- **Frontend + Backend**: Served from FastAPI inside the container
-- **Database**: Cosmos DB (NoSQL Core API)
+yaml
+Copy code
+
+### Components
+- **Frontend + Backend**: Served from FastAPI
+- **Database**: Azure Cosmos DB (SQL API)
 - **Hosting**: Azure Container Instance (Linux)
 - **Container Registry**: Docker Hub
-- **CI/CD**: GitHub Actions
 
 ---
 
-## 📦 Project Structure
+## 📁 Project Structure
 
-Milestone3/
+brewhaven-cafe/
 ├── main.py
 ├── Dockerfile
 ├── requirements.txt
-├── .github/
-│ └── workflows/
-│ ├── ci.yml
-│ └── deploy.yml
-└── README.md
+├── README.md
 
+yaml
+Copy code
 
 ---
 
-## 🧪 Local Development
+## 🧪 Local Development (without Azure)
 
-### 1. Create virtual environment
-```bash
-python3 -m venv venv
-source venv/bin/activate
-
-
-### 2. Install dependencies
+### 1. Install dependencies
 ```bash
 pip install -r requirements.txt
-```
-
-### 3. Run the server locally
-```bash
+2. Run locally
+bash
+Copy code
 uvicorn main:app --reload
-```
+Open in browser:
 
-```bash
-uvicorn main:app --reload
-```
-Open in your browser:
-```bash
 cpp
 Copy code
 http://127.0.0.1:8000/
-```
+Note: Without Cosmos DB environment variables, database-backed features will be disabled.
 
-## 🐳 Docker Commands
-```bash
-Build image
+🐳 Docker Usage
+Build image locally
 bash
 Copy code
-docker build -t cloudmart-api:local .
-Run container
+docker build -t brewhaven-api:local .
+Run container locally
 bash
 Copy code
-docker run --rm -p 8000:80 cloudmart-api:local☁️ Deployment (Azure Portal)
-```
+docker run --rm -p 8080:80 brewhaven-api:local
+Open:
 
-# Due to subscription restrictions in Seneca’s Azure Lab environment, deployment is performed manually through the Azure Portal:
+arduino
+Copy code
+http://localhost:8080/
+☁️ Azure Deployment
+The application is deployed using Azure Container Instances and connects to Azure Cosmos DB.
 
-- Push Docker image to Docker Hub
-
-- Create Azure Container Instance (ACI)
-
-### Configure environment variables:
-
-```bash
+Required environment variables:
 COSMOS_ENDPOINT
 
 COSMOS_KEY
 
-Expose port 80
+JWT_SECRET_KEY
 
-Assign DNS label (e.g., cloudmart132256223)
-```
+On first startup, the application automatically seeds the café menu into Cosmos DB.
 
-## 🔄 CI/CD Workflows
-
-ci.yml
-
-Runs automatically on each push to main
-
-Installs dependencies
-
-Lints FastAPI code
-
-Builds Docker image
-
-deploy.yml
-
-Deployment stage included but performs:
-
-echo "Azure deployment is performed manually due to subscription restrictions."
-
-
-This satisfies the Milestone 3 requirement to demonstrate a deployment stage.
-
-🔍 Endpoints
+🔍 API Endpoints
 Method	Endpoint	Description
-GET	/	Frontend HTML
-GET	/health	Status + build info
-GET	/api/v1/products	List products
-GET	/api/v1/products/{id}	Get specific product
+GET	/	Frontend UI
+GET	/health	Health & build info
+POST	/auth/login	Login (JWT)
+GET	/api/v1/products	List menu items
 GET	/api/v1/categories	List categories
-GET	/api/v1/cart	Retrieve cart
-POST	/api/v1/cart/items	Add/update cart item
-DELETE	/api/v1/cart/items/{id}	Remove cart item
+GET	/api/v1/cart	Get basket
+POST	/api/v1/cart/items	Add/update basket item
+DELETE	/api/v1/cart/items/{id}	Remove basket item
 POST	/api/v1/orders	Place order
-GET	/api/v1/orders	List all orders
-📸 Screenshots Required for Submission
-
-Cosmos DB database + containers
-
-Azure Container Instance overview
-
-Container Environment Variables (COSMOS_ENDPOINT, COSMOS_KEY)
-
-Running CloudMart app from DNS
-
-GitHub Actions CI pipeline success
-
-GitHub Actions Deploy pipeline success
-
-Docker Hub image
-
-Project folder structure
-
-Commands used during build/deployment (terminal screenshots)
+GET	/api/v1/orders	List orders
 
 👤 Author
-
-Ali Babamahmoudi
-Seneca Polytechnic – CSP451
-2025
+Ilaha Alakbarova
+CSP451 Final Project
