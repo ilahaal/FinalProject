@@ -38,5 +38,6 @@ jobs:
         context: .
         file: ./Dockerfile
         push: true
-        tags: alibmd/cloudmart-api:latest
-
+        tags: |
+          ilahaal/brewhaven-api:latest
+          ilahaal/brewhaven-api:${{ github.sha }}
